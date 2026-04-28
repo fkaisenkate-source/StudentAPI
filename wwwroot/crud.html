@@ -263,11 +263,8 @@
 <!-- Form Card -->
 <div class="card">
   <div class="card-title">✦ Student Form</div>
+  <input type="hidden" id="id">
   <div class="form-grid">
-    <div class="form-group">
-      <label for="id">Student ID</label>
-      <input type="number" id="id" placeholder="e.g. 3">
-    </div>
     <div class="form-group">
       <label for="name">Full Name</label>
       <input type="text" id="name" placeholder="e.g. Juan dela Cruz">
@@ -351,11 +348,10 @@ function editStudent(id, name, course) {
 
 async function addStudent() {
   const student = {
-    id:     parseInt(document.getElementById("id").value),
     name:   document.getElementById("name").value.trim(),
     course: document.getElementById("course").value.trim()
   };
-  if (!student.name || !student.course || isNaN(student.id)) {
+  if (!student.name || !student.course) {
     toast("⚠ Please fill in all fields."); return;
   }
   await fetch(API, {

@@ -30,9 +30,9 @@ return Ok(student);
 [HttpPost]
 public ActionResult<Student> AddStudent(Student student)
 {
-students.Add(student);
-return CreatedAtAction(nameof(GetStudent), new { id = student.Id },
-student);
+    student.Id = students.Count > 0 ? students.Max(s => s.Id) + 1 : 1;
+    students.Add(student);
+    return CreatedAtAction(nameof(GetStudent), new { id = student.Id }, student);
 }
 
 
