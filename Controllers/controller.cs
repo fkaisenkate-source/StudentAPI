@@ -8,8 +8,7 @@ public class StudentController : ControllerBase
 {
 private static List<Student> students = new List<Student>
 {
-new Student { Id = 1, Name = "Patrick", Course = "IT" },
-new Student { Id = 2, Name = "Maria", Course = "CS" }
+new Student { Id = 1, Name = "Kaisen", Course = "BSIT" },
 };
 
 
