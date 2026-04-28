@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink-deep:    #c2185b;
+    --pink-mid:     #e91e8c;
+    --pink-soft:    #f48fb1;
+    --pink-pale:    #fce4ec;
+    --pink-blush:   #fff0f5;
+    --white:        #ffffff;
+    --text-dark:    #3a1a2e;
+    --text-mid:     #7b4f6a;
+    --text-light:   #b07a98;
+    --border:       #f8bbd0;
+    --shadow:       rgba(194, 24, 91, 0.12);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--pink-blush);
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(233,30,140,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 80%, rgba(194,24,91,0.07) 0%, transparent 60%);
+    min-height: 100vh;
+    color: var(--text-dark);
+    padding: 2rem 1rem 4rem;
+  }
+
+  /* ── Header ─────────────────────────────────── */
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+  header .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    padding: .3rem .9rem;
+    border-radius: 999px;
+    margin-bottom: .75rem;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--pink-deep);
+    line-height: 1.1;
+  }
+  header p {
+    color: var(--text-light);
+    font-size: .9rem;
+    margin-top: .4rem;
+  }
+
+  /* ── Card shell ──────────────────────────────── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 24px var(--shadow);
+    max-width: 860px;
+    margin: 0 auto 2rem;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--pink-deep);
+    margin-bottom: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Form grid ───────────────────────────────── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  .form-group { display: flex; flex-direction: column; gap: .4rem; }
+  label {
+    font-size: .75rem;
+    font-weight: 500;
+    color: var(--text-mid);
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+  input[type="text"],
+  input[type="number"] {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: .65rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .92rem;
+    color: var(--text-dark);
+    background: var(--pink-blush);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus {
+    border-color: var(--pink-mid);
+    box-shadow: 0 0 0 3px rgba(233,30,140,.12);
+    background: var(--white);
+  }
+
+  /* ── Buttons ─────────────────────────────────── */
+  .btn-row {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.4rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    font-weight: 500;
+    padding: .65rem 1.6rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s, opacity .15s;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .btn:hover  { transform: translateY(-2px); box-shadow: 0 6px 18px var(--shadow); }
+  .btn:active { transform: translateY(0);    box-shadow: none; }
+  .btn-add {
+    background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+    color: #fff;
+  }
+  .btn-update {
+    background: var(--pink-pale);
+    color: var(--pink-deep);
+    border: 1.5px solid var(--pink-soft);
+  }
+  .btn-clear {
+    background: transparent;
+    color: var(--text-light);
+    border: 1.5px solid var(--border);
+    margin-left: auto;
+  }
+
+  /* ── Toast ───────────────────────────────────── */
+  #toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--pink-deep);
+    color: #fff;
+    padding: .75rem 1.4rem;
+    border-radius: 12px;
+    font-size: .88rem;
+    box-shadow: 0 8px 24px var(--shadow);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity .3s, transform .3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  /* ── Table ───────────────────────────────────── */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+  }
+  thead tr {
+    background: linear-gradient(135deg, var(--pink-mid), var(--pink-deep));
+    color: #fff;
+  }
+  thead th {
+    padding: .85rem 1.1rem;
+    text-align: left;
+    font-weight: 500;
+    font-size: .78rem;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+  }
+  thead th:first-child { border-radius: 10px 0 0 10px; }
+  thead th:last-child  { border-radius: 0 10px 10px 0; }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  tbody tr:hover { background: var(--pink-blush); }
+  tbody td { padding: .85rem 1.1rem; color: var(--text-dark); }
+  tbody td:first-child { color: var(--text-light); font-size: .82rem; }
+  .actions { display: flex; gap: .5rem; }
+  .btn-edit {
+    background: var(--pink-pale);
+    color: var(--pink-deep);
+    border: 1px solid var(--pink-soft);
+    border-radius: 8px;
+    padding: .35rem .85rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-edit:hover { background: var(--pink-soft); color: #fff; }
+  .btn-del {
+    background: transparent;
+    color: #e57373;
+    border: 1px solid #ffcdd2;
+    border-radius: 8px;
+    padding: .35rem .85rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-del:hover { background: #ffebee; }
+
+  .empty-state {
+    text-align: center;
+    padding: 2.5rem;
+    color: var(--text-light);
+    font-size: .9rem;
+  }
+  .empty-state span { display: block; font-size: 2rem; margin-bottom: .5rem; }
+
+  /* ── Count pill ──────────────────────────────── */
+  #count-pill {
+    display: inline-block;
+    background: var(--pink-pale);
+    color: var(--pink-deep);
+    border: 1px solid var(--pink-soft);
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 500;
+    padding: .15rem .7rem;
+    margin-left: .5rem;
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">✦ Student Portal</div>
+  <h1>Student Management</h1>
+  <p>Add, edit and remove student records</p>
+</header>
+
+<!-- Form Card -->
+<div class="card">
+  <div class="card-title">✦ Student Form</div>
+  <div class="form-grid">
+    <div class="form-group">
+      <label for="id">Student ID</label>
+      <input type="number" id="id" placeholder="e.g. 3">
+    </div>
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="e.g. Juan dela Cruz">
+    </div>
+    <div class="form-group">
+      <label for="course">Course</label>
+      <input type="text" id="course" placeholder="e.g. BSIT">
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-add"    onclick="addStudent()">＋ Add Student</button>
+    <button class="btn btn-update" onclick="updateStudent()">✎ Update</button>
+    <button class="btn btn-clear"  onclick="clearForm()">✕ Clear</button>
+  </div>
+</div>
+
+<!-- Table Card -->
+<div class="card">
+  <div class="card-title">✦ Students List <span id="count-pill">0</span></div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Course</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="studentTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = "/api/student";
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+function clearForm() {
+  ["id","name","course"].forEach(id => document.getElementById(id).value = "");
+}
+
+async function loadStudents() {
+  const res  = await fetch(API);
+  const data = await res.json();
+  const tbody = document.getElementById("studentTable");
+  document.getElementById("count-pill").textContent = data.length;
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><span>🎀</span>No students yet. Add one above!</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(s => `
+    <tr>
+      <td>#${s.id}</td>
+      <td>${s.name}</td>
+      <td>${s.course}</td>
+      <td><div class="actions">
+        <button class="btn-edit" onclick="editStudent(${s.id},'${s.name}','${s.course}')">Edit</button>
+        <button class="btn-del"  onclick="deleteStudent(${s.id})">Delete</button>
+      </div></td>
+    </tr>`).join("");
+}
+
+function editStudent(id, name, course) {
+  document.getElementById("id").value     = id;
+  document.getElementById("name").value   = name;
+  document.getElementById("course").value = course;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  toast("✎ Editing student #" + id);
+}
+
+async function addStudent() {
+  const student = {
+    id:     parseInt(document.getElementById("id").value),
+    name:   document.getElementById("name").value.trim(),
+    course: document.getElementById("course").value.trim()
+  };
+  if (!student.name || !student.course || isNaN(student.id)) {
+    toast("⚠ Please fill in all fields."); return;
+  }
+  await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(student)
+  });
+  clearForm();
+  toast("✦ Student added!");
+  loadStudents();
+}
+
+async function updateStudent() {
+  const id = document.getElementById("id").value;
+  if (!id) { toast("⚠ Enter an ID to update."); return; }
+  const student = {
+    id:     parseInt(id),
+    name:   document.getElementById("name").value.trim(),
+    course: document.getElementById("course").value.trim()
+  };
+  await fetch(API + "/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(student)
+  });
+  clearForm();
+  toast("✔ Student updated!");
+  loadStudents();
+}
+
+async function deleteStudent(id) {
+  if (!confirm("Delete student #" + id + "?")) return;
+  await fetch(API + "/" + id, { method: "DELETE" });
+  toast("🗑 Student deleted.");
+  loadStudents();
+}
+
+loadStudents();
+</script>
+</body>
+</html>
